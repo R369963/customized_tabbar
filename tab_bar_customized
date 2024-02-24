@@ -1,0 +1,118 @@
+import 'package:flutter/material.dart';
+import 'package:m_skool_flutter/controller/mskoll_controller.dart';
+import 'package:m_skool_flutter/model/login_success_model.dart';
+
+class Screen2 extends StatefulWidget {
+  const Screen2({Key? key, required this.loginSuccessModel, required this.mskoolController}) : super(key: key);
+
+  final LoginSuccessModel loginSuccessModel;
+  final MskoolController mskoolController;
+
+  @override
+  State<Screen2> createState() => _Screen2State();
+}
+
+class _Screen2State extends State<Screen2> {
+  late ScrollController _scrollController;
+  int selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Test")),
+      body: Column(
+        children: [
+          Expanded(
+            flex: 1,
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: List.generate(10, (index) {
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedIndex = index;
+                        _scrollTo(index);
+                      });
+                    },
+                    child: Container(
+                      height: 40,
+                      width: 120,
+                      color: index == selectedIndex ? Colors.blue : Color.fromARGB(255, 233, 211, 204),
+                      child: Center(child: Text("Item ${index + 1}")),
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 20,
+            child: selectedIndex == 1
+                ? Container(
+                    color: Colors.amberAccent,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: List.generate(200, (index) => Container(
+                          height: 30,
+                          child: Center(
+                            child: Text("Item ${index + 1}"),
+                          ),
+                        )),
+                      ),
+                    ),
+                  )
+                : selectedIndex == 2
+                    ? Container(
+                        color: Color.fromARGB(255, 255, 102, 64),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: List.generate(10, (index) => Container(
+                              height: 30,
+                              child: Center(
+                                child: Text("Item ${index + 1}"),
+                              ),
+                            )),
+                          ),
+                        ),
+                      )
+                    : Container(
+                        color: Color.fromARGB(255, 231, 229, 229),
+                        child: Center(
+                          child: Text("Center"),
+                        ),
+                      ),
+          )
+        ],
+      ),
+    );
+  }
+
+  void _scrollTo(int index) {
+    final double maxScrollExtent = _scrollController.position.maxScrollExtent;
+    final double minScrollExtent = _scrollController.position.minScrollExtent;
+    final double itemWidth = 120.0; // Adjust based on the width of your containers
+
+    final double viewportWidth = _scrollController.position.viewportDimension;
+    final double centerOffset = index * itemWidth - viewportWidth / 2 + itemWidth / 2;
+
+    if (centerOffset < minScrollExtent) {
+      _scrollController.jumpTo(minScrollExtent);
+    } else if (centerOffset > maxScrollExtent) {
+      _scrollController.jumpTo(maxScrollExtent);
+    } else {
+      _scrollController.animateTo(
+        centerOffset,
+        duration: Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+}
